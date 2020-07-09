@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'edu.pucmm.eict'
+version '1.0-SNAPSHOT'
+
+mainClassName='edu.pucmm.eict.jws.Main'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile 'io.javalin:javalin:3.9.1'
+    compile "org.slf4j:slf4j-simple:1.7.28"
+    compile 'com.j2html:j2html:1.0.0'
+}

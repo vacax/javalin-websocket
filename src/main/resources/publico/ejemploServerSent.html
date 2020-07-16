@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ejemplo Polling</title>
+    <!-- Incluyendo la libreria de JQuery-->
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script>
+
+        $(document).ready(function(){
+            console.info("Iniciando Jquery -  Ejemplo Polling");
+            var evtSource = new EventSource("/evento-servidor");
+
+            evtSource.addEventListener("conectado", function(e) {
+                $("#fecha").text(e.data);
+            }, false);
+
+            evtSource.addEventListener("ping", function(e) {
+                $("#ping").text(e.data);
+            }, false);
+        });
+
+    </script>
+</head>
+<body>
+<h1>Ejemplos de llamada Polling del cliente al servidor</h1>
+<p>
+  La fecha actual en el servidor: <span id="fecha"></span>
+</p>
+<p>
+    La fecha actual en el servidor: <span id="ping"></span>
+</p>
+<p>
+    Abra la herramienta de desarrollador web para visualizar las peticiones que realiza el cliente....
+</p>
+</body>
+</html>

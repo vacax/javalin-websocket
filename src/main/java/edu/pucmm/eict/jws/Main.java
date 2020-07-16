@@ -2,6 +2,7 @@ package edu.pucmm.eict.jws;
 
 import io.javalin.Javalin;
 import io.javalin.core.util.RouteOverviewPlugin;
+import io.javalin.http.sse.SseClient;
 import org.eclipse.jetty.websocket.api.Session;
 
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static j2html.TagCreator.*;
 import static j2html.TagCreator.a;
@@ -17,6 +19,7 @@ public class Main {
 
     //Creando el repositorio de las sesiones recibidas.
     public static List<Session> usuariosConectados = new ArrayList<>();
+    public static List<SseClient> listaSseUsuario = new ArrayList<>();
 
     public static void main(String[] args) {
         System.out.println("Hola Mundo en Javalin - Socket");
@@ -33,6 +36,7 @@ public class Main {
                     body(
                             h1("Ejemplo de Ajax y WebSocket"),
                             h2(a("Ejemplo Polling").withHref("/ejemploPolling.html")),
+                            h2(a("Ejemplo Server Sent").withHref("/ejemploServerSent.html")),
                             h2(a("Ejemplo WebSocket").withHref("/ejemploWebSocket.html"))
                     )).render();
             ctx.html(tramaHtml);
@@ -96,6 +100,7 @@ public class Main {
                 System.out.println("Conexión Cerrada - "+ctx.getSessionId());
                 usuariosConectados.remove(ctx.session);
             });
+
             ws.onError(ctx -> {
                 System.out.println("Ocurrió un error en el WS");
             });
@@ -108,6 +113,32 @@ public class Main {
             System.out.println("Filtro para WS despues de la llamada al WS");
             //ejecutar cualquier evento antes...
         });
+
+        //Caso de los Server-sent Events.
+        app.sse("/evento-servidor", sseClient -> {
+            System.out.println("Agregando cliente para evento del servidor: ");
+            sseClient.sendEvent("conectado","Conectando ");
+            listaSseUsuario.add(sseClient);
+            sseClient.onClose(() -> {
+                listaSseUsuario.remove(sseClient);
+            });
+        });
+
+        //Enviando el evento...
+        new Thread(() -> {
+            while(true){
+                List<SseClient> listaTmp = new CopyOnWriteArrayList<>(listaSseUsuario);
+                listaTmp.forEach(sseClient -> {
+                    System.out.println("Enviando informacion...");
+                    sseClient.sendEvent("ping", ""+new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+                });
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
     }
 

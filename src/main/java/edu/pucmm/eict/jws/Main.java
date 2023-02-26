@@ -1,8 +1,9 @@
 package edu.pucmm.eict.jws;
 
 import io.javalin.Javalin;
-import io.javalin.core.util.RouteOverviewPlugin;
 import io.javalin.http.sse.SseClient;
+import io.javalin.http.staticfiles.Location;
+import io.javalin.plugin.bundled.RouteOverviewPlugin;
 import org.eclipse.jetty.websocket.api.Session;
 
 import java.io.IOException;
@@ -25,8 +26,17 @@ public class Main {
         System.out.println("Hola Mundo en Javalin - Socket");
         //inicio del servidor.
         Javalin app = Javalin.create(javalinConfig -> {
-            javalinConfig.addStaticFiles("/publico");
-            javalinConfig.registerPlugin(new RouteOverviewPlugin("/rutas")); //aplicando plugins de las rutas
+            javalinConfig.staticFiles.add(staticFileConfig -> {
+                staticFileConfig.hostedPath = "/";
+                staticFileConfig.directory = "/publico";
+                staticFileConfig.location = Location.CLASSPATH;
+                staticFileConfig.aliasCheck = null;
+                staticFileConfig.precompress = false;
+
+            });
+
+            javalinConfig.plugins.register((new RouteOverviewPlugin("/rutas")));
+
         }).start(getHerokuAssignedPort());
 
         //
@@ -117,6 +127,7 @@ public class Main {
         //Caso de los Server-sent Events.
         app.sse("/evento-servidor", sseClient -> {
             System.out.println("Agregando cliente para evento del servidor: ");
+            sseClient.keepAlive();
             sseClient.sendEvent("conectado","Conectando ");
             listaSseUsuario.add(sseClient);
             sseClient.onClose(() -> {

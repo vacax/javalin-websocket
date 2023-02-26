@@ -1,20 +1,41 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
-group 'edu.pucmm.eict'
+group 'edu.pucmm.iect.jws'
 version '1.0-SNAPSHOT'
 
-mainClassName='edu.pucmm.eict.jws.Main'
+mainClassName = 'edu.pucmm.eict.jws.Main'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile 'io.javalin:javalin:3.9.1'
-    compile "org.slf4j:slf4j-simple:1.7.28"
-    compile 'com.j2html:j2html:1.0.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation("io.javalin:javalin:5.3.2")
+    implementation("org.slf4j:slf4j-simple:2.0.3")
+    implementation('com.j2html:j2html:1.0.0')
+
+    // En la versión 5.3.X separaron las clases del renderizado en otro proyecto
+    implementation("io.javalin:javalin-rendering:5.3.2")
+
+    //Librerías de los sistemas de plantilla utilizados.
+    implementation 'org.freemarker:freemarker:2.3.32'
+    implementation 'org.thymeleaf:thymeleaf:3.1.1.RELEASE'
+    implementation 'org.apache.velocity:velocity-engine-core:2.3'
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+shadowJar{
+    archiveBaseName.set("app")
+    archiveClassifier.set('')
+    archiveVersion.set('')
 }

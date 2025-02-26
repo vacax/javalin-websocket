@@ -8,5 +8,5 @@ Proyecto demostración de Ajax, WebSocket y Server-sent Events.
 
 ## Requiere:
 
-* Java 17
-* Gradle 7.5.1
+* Java 21
+* Gradle 8.5

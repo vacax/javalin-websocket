@@ -7,6 +7,10 @@ plugins {
 group 'edu.pucmm.iect.jws'
 version '1.0-SNAPSHOT'
 
+java {
+    sourceCompatibility = '21'
+}
+
 mainClassName = 'edu.pucmm.eict.jws.Main'
 
 repositories {
